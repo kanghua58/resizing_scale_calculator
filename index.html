@@ -8,11 +8,12 @@
         body {
             font-family: Arial, sans-serif;
             max-width: 400px;
-            margin: 20px auto;
+            margin: 50px auto;
             padding: 20px;
             background: #f4f4f4;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
         h2 {
             text-align: center;
@@ -20,9 +21,10 @@
         label, p {
             display: block;
             margin: 10px 0;
+            text-align: left;
         }
         input[type="number"] {
-            width: 100%;
+            width: calc(100% - 16px);
             padding: 8px;
             margin: 5px 0;
             border: 1px solid #ccc;
@@ -37,14 +39,23 @@
             border-radius: 5px;
             font-size: 16px;
             cursor: pointer;
+            margin-top: 10px;
         }
         button:hover {
             background: #0056b3;
         }
-        h3 {
-            text-align: center;
+        .result {
             margin-top: 15px;
-            color: #333;
+            padding: 10px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+        .scale-factor {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d9534f;
+            margin-bottom: 5px;
         }
     </style>
     <script>
@@ -55,30 +66,26 @@
             let isStacked = document.querySelector('input[name="stacked"]:checked').value;
             
             let maxSize = 160;
-            let newWidth = width;
-            let newHeight = height;
-            
-            if (type === "text") {
-                newWidth += 24; // 四边扩展12dp
-                newHeight += 24;
-            } else if (type === "image" || isStacked === "stacked") {
-                newWidth *= 1.05;
-                newHeight *= 1.05;
-            }
+            let scaleFactor = 1.05;
+            let newWidth = width * scaleFactor;
+            let newHeight = height * scaleFactor;
             
             if (newHeight > maxSize) {
-                let scale = maxSize / height;
+                let scale = maxSize / newHeight;
                 newHeight = maxSize;
-                newWidth = width * scale;
+                newWidth *= scale;
             }
             
             if (isStacked === "stacked" && newWidth > maxSize) {
+                let scale = maxSize / newWidth;
                 newWidth = maxSize;
+                newHeight *= scale;
             }
             
-            let scaleFactor = newHeight / height;
+            let finalScaleFactor = newHeight / height;
             
-            document.getElementById("result").innerText = `缩放后尺寸：宽度 ${newWidth.toFixed(2)}dp，高度 ${newHeight.toFixed(2)}dp (缩放比例: x${scaleFactor.toFixed(2)})`;
+            document.getElementById("scaleFactor").innerText = `缩放比例: x${finalScaleFactor.toFixed(2)}`;
+            document.getElementById("sizeResult").innerText = `缩放后尺寸：宽度 ${newWidth.toFixed(2)}dp，高度 ${newHeight.toFixed(2)}dp`;
         }
     </script>
 </head>
@@ -99,6 +106,9 @@
     <br>
     <button onclick="calculateScale()">计算</button>
     
-    <h3 id="result">缩放后尺寸：</h3>
+    <div class="result">
+        <div id="scaleFactor" class="scale-factor"></div>
+        <div id="sizeResult"></div>
+    </div>
 </body>
 </html>
