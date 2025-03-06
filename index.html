@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拖起态缩放计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f4f4f4;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        label, p {
+            display: block;
+            margin: 10px 0;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        h3 {
+            text-align: center;
+            margin-top: 15px;
+            color: #333;
+        }
+    </style>
+    <script>
+        function calculateScale() {
+            let width = parseFloat(document.getElementById("width").value);
+            let height = parseFloat(document.getElementById("height").value);
+            let type = document.querySelector('input[name="objectType"]:checked').value;
+            let isStacked = document.querySelector('input[name="stacked"]:checked').value;
+            
+            let maxSize = 160;
+            let newWidth = width;
+            let newHeight = height;
+            
+            if (type === "text") {
+                newWidth += 24; // 四边扩展12dp
+                newHeight += 24;
+            } else if (type === "image" || isStacked === "stacked") {
+                newWidth *= 1.05;
+                newHeight *= 1.05;
+            }
+            
+            if (newHeight > maxSize) {
+                let scale = maxSize / height;
+                newHeight = maxSize;
+                newWidth = width * scale;
+            }
+            
+            let scaleFactor = newHeight / height;
+            
+            document.getElementById("result").innerText = `缩放后尺寸：宽度 ${newWidth.toFixed(2)}dp，高度 ${newHeight.toFixed(2)}dp (缩放比例: x${scaleFactor.toFixed(2)})`;
+        }
+    </script>
+</head>
+<body>
+    <h2>拖起态缩放计算器</h2>
+    <label>原始宽度（dp）：<input type="number" id="width" /></label>
+    <label>原始高度（dp）：<input type="number" id="height" /></label>
+    
+    <p>选择对象类型：</p>
+    <label><input type="radio" name="objectType" value="text" checked> 文字</label>
+    <label><input type="radio" name="objectType" value="image"> 图片</label>
+    <label><input type="radio" name="objectType" value="custom"> 自定义对象</label>
+    
+    <p>选择拖起方式：</p>
+    <label><input type="radio" name="stacked" value="single" checked> 单个拖起</label>
+    <label><input type="radio" name="stacked" value="stacked"> 堆叠拖起</label>
+    
+    <br>
+    <button onclick="calculateScale()">计算</button>
+    
+    <h3 id="result">缩放后尺寸：</h3>
+</body>
+</html>
